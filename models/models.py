@@ -2,6 +2,8 @@ from typing import List
 import numpy as np
 
 import torch.nn.functional as F
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from torch import Tensor
 from transformers import AutoTokenizer, AutoModel
@@ -48,3 +50,20 @@ def _add_query(posts: List[str]) -> List[str]:
         posts[indx] = 'query' + value
 
     return posts
+
+
+def predict_zero_shot(text, label_texts, label='entailment', normalize=True):
+    model_checkpoint = 'cointegrated/rubert-base-cased-nli-threeway'
+    tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_checkpoint)
+    if torch.cuda.is_available():
+        model.cuda()
+    tokens = tokenizer([text] * len(label_texts), label_texts,
+                       truncation=True, return_tensors='pt', padding=True)
+    with torch.inference_mode():
+        result = torch.softmax(model(**tokens.to(model.device)).logits, -1)
+    proba = result[:, model.config.label2id[label]].cpu().numpy()
+    if normalize:
+        proba /= sum(proba)
+    return proba

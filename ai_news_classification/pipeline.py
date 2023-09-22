@@ -6,20 +6,9 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 
-try:
-    path = os.path.abspath('../models/')
-    sys.path.append(path)
-    from text_classification import predict_zero_shot
-except Exception as e:
-    print(e)
 
-try:
-    path = os.path.abspath('../models/')
-    sys.path.append(path)
-    from sentence_similarity import compute_similarity
-except Exception as e:
-    print(e)
-
+from models.models import predict_zero_shot
+from models.models import compute_similarity
 
 def input_data(path: str) -> pd.DataFrame:
     """
@@ -47,7 +36,7 @@ def handle_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Датафрейм, готовый для классификации
     """
-    # Удаление ненужных постов
+    # Удаление ненужных столбцов
     df = df[['text']]
 
     # Удаление явных дубликатов
@@ -102,12 +91,15 @@ def fill_storage(df: pd.DataFrame, post_themes: List[str]) -> Tuple[Dict[str, Li
 
     # Создадим хранилище
     storage: Dict[str, List[str]] = {}
-    # Рассчитаем кол-во постов по каждой из тематик
-    min_posts_amount = _compute_min_post_amount_output(df)
 
     for post_theme in post_themes:
 
         theme_posts = df['text'].loc[df['Label'] == post_theme].to_list()
+        # Рассчитаем кол-во постов по каждой из тематик
+        # Если кол-во меньше 10, то берем все посты
+        # Иначе по 10
+        total_theme_posts = len(theme_posts)
+        min_posts_amount = total_theme_posts if total_theme_posts < 10 else 10
         storage[post_theme] = theme_posts[:min_posts_amount]
         posts = theme_posts[min_posts_amount:]
 
@@ -150,9 +142,18 @@ def output_data(classified_data: pd.DataFrame, storage: Dict[str, List[str]]) ->
             f.write('-'*100 + '\n')
 
 
-def main():
-    # data_path = os.path.join('data', 'final_data.csv.gz')
-    data_path = r'D:\projects\ai_news\data\test.csv'
+def launch_pipeline(file_path: str = r'D:\projects\ai_news\data\test.csv'):
+    """
+    Запуск пайплайна
+
+    Args:
+        file_path (str): Путь до входного файла
+
+    Returns:
+        None
+    """
+
+    data_path = file_path
     # post_themes = ['Блоги', 'Новости и СМИ', 'Развлечения и юмор', 'Технологии',
     #                'Экономика', 'Бизнес и стартапы', 'Криптовалюты', 'Путешествия',
     #                'Маркетинг, PR, реклама', 'Психология', 'Дизайн', 'Политика',
@@ -202,11 +203,9 @@ def _compute_min_post_amount_output(df: pd.DataFrame) -> int:
     Return:
         int: Количество постов для вывода
     """
-    total_theme_posts = df['Label'].value_counts().tolist()
-    min_theme_posts = min(total_theme_posts) if min(
-        total_theme_posts) < 10 else 10
-    return min_theme_posts
+    raise NotImplementedError
 
 
-if __name__ == "__main__":
-    main()
+# TODO: написать _compare_with_other_posts, _compute_min_post_amount_output, написать try-except, где необходимо
+
+
