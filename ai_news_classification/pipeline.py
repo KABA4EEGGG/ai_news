@@ -128,12 +128,12 @@ def output_data(classified_data: pd.DataFrame, storage: Dict[str, List[str]]) ->
     """
     # Сохранение датафрейма
     df_output_path = os.path.join(
-        '..', 'data', 'output_data', 'labeled_data.csv')
+        '.', 'data', 'output_data', 'labeled_data.csv')
     classified_data.to_csv(df_output_path, index=False)
 
     # Сохранение уникальных постов
     posts_output_path = os.path.join(
-        '..', 'data', 'output_data', 'unique_posts.txt')
+        '.', 'data', 'output_data', 'unique_posts.txt')
     with open(posts_output_path, 'w', encoding='utf-8') as f:
         for post_theme, posts in storage.items():
             f.write(post_theme.upper() + '\n')
@@ -142,7 +142,7 @@ def output_data(classified_data: pd.DataFrame, storage: Dict[str, List[str]]) ->
             f.write('-'*100 + '\n')
 
 
-def launch_pipeline(file_path: str = r'D:\projects\ai_news\data\test.csv'):
+def launch_pipeline(file_path: str = r'.\data\test.csv'):
     """
     Запуск пайплайна
 
@@ -207,5 +207,3 @@ def _compute_min_post_amount_output(df: pd.DataFrame) -> int:
 
 
 # TODO: написать _compare_with_other_posts, _compute_min_post_amount_output, написать try-except, где необходимо
-
-

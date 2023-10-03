@@ -1,21 +1,29 @@
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
+from fastapi.responses import FileResponse
 from ai_news_classification import pipeline
 import sys
 import os
 
-
+import pandas as pd
 app = FastAPI()
+@app.get("/")
+def root():
+    return FileResponse("./app/html/index.html")
 
-
-@app.get("/predict")
-def base_predict(file_path: str):
+@app.post("/predict")
+def base_predict(data=Body()):
     """
     Роут для классификации и дедубликации
     """
-    if os.path.exists(file_path): # проверка на наличие файла
-        pipeline.launch_pipeline(file_path)
+    if os.path.exists(data["pathdata"]): # проверка на наличие файла
+        pipeline.launch_pipeline(data["pathdata"])
         return "Успех. Результат находится в папке ai_news/data/output_data"
     else:
         return "Проверьте првильность написаниия пути до файла"
+
+
+@app.get("/news/{category}")
+def news_view(category: str):
+    pass

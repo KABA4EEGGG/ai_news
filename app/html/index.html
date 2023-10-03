@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI NEWS</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div id="message"></div>
+     <p>
+        Введите path данных: <br />
+        <input name="path" id="path" />
+    </p>
+    <button onclick="send()">Отправить</button>
+<script>
+    async function send(){
+
+        // получаем введеное в поле значение
+        const path = document.getElementById("path").value;
+        // отправляем запрос
+        const response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    pathdata: path
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("message").textContent = data.message;
+            }
+            else
+                console.log(response);
+    }
+</script>
+</body>
+</html>
