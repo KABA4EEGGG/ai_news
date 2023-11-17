@@ -1,2 +1,7 @@
-/venv
-/.mypy_cache
+venv
+.env
+.vscode
+app
+data
+pgnews.session
+parse_init.py

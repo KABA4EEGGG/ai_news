@@ -1,0 +1,11 @@
+APScheduler==3.10.4
+async-timeout==4.0.3
+asyncpg==0.29.0
+Pillow==10.1.0
+pyaes==1.6.1
+pyasn1==0.5.0
+pytz==2023.3.post1
+rsa==4.9
+six==1.16.0
+Telethon==1.31.1
+tzlocal==5.2

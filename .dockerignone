@@ -1,0 +1,11 @@
+data
+app
+notebooks
+venv
+telegram_bot
+parse
+README.md
+.gitignore
+storage_update.jpg
+thoughts.md
+uml_pipline_diagram.jpg

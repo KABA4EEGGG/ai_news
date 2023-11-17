@@ -1,0 +1,55 @@
+version: "3"
+services:
+  database:
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "admin"]
+  telegram_bot:
+    build: ./telegram_bot/
+    env_file:
+      - .env
+    entrypoint: ["python", "-u", "bot.py"]
+    ports:
+      - "420:80"
+    depends_on:
+      database:
+        condition: service_healthy
+      ai_news_classification:
+        condition: service_started
+  telegram_parse:
+    build: ./parse/
+    env_file:
+      - .env
+    entrypoint: ["python", "-u", "parser_1.py"]
+    ports:
+      - "421:80"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  ai_news_classification:
+    build: ./ai_news_classification/
+    env_file:
+      - .env
+    command: ["python3.10", "-u", "pipeline.py" ]
+    ports:
+      - "422:80"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    depends_on:
+      database:
+        condition: service_healthy
+      telegram_parse:
+        condition: service_started
+
+volumes:
+  postgres:

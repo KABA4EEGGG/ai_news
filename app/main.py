@@ -2,12 +2,14 @@ from typing import Union
 
 from fastapi import FastAPI, Body
 from fastapi.responses import FileResponse
+from fastapi.templating import Jinja2Templates
 from ai_news_classification import pipeline
 import sys
 import os
 
 import pandas as pd
 app = FastAPI()
+templates = Jinja2Templates(directory="./app/templates")
 @app.get("/")
 def root():
     return FileResponse("./app/html/index.html")
@@ -25,5 +27,5 @@ def base_predict(data=Body()):
 
 
 @app.get("/news/{category}")
-def news_view(category: str):
-    pass
+async def news_view(category: str):
+    return
